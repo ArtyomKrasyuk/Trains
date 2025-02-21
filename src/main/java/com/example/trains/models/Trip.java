@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Data
@@ -23,9 +24,9 @@ public class Trip {
     @JoinColumn(name = "destination", referencedColumnName = "city_id")
     private City destination;
     @Column(name = "departure_time")
-    private String departureTime;
+    private Timestamp departureTime;
     @Column(name = "arrival_time")
-    private String arrivalTime;
+    private Timestamp arrivalTime;
     @Column(name = "range_factor")
     private double rangeFactor;
 

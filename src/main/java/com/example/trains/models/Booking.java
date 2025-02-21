@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -25,7 +27,7 @@ public class Booking {
     @Column(name = "passport_series_and_number")
     private String passportSeriesAndNumber;
     @Column(name = "passport_issue_date")
-    private String passportIssueDate;
+    private Date passportIssueDate;
     @Column(name = "who_issued")
     private String whoIssued;
 }
