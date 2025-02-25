@@ -30,4 +30,5 @@ public class Booking {
     private Date passportIssueDate;
     @Column(name = "who_issued")
     private String whoIssued;
+    private double price;
 }

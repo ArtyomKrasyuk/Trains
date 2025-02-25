@@ -21,7 +21,8 @@ public class Place {
     private Carriage carriage;
     @Column(name = "passenger_gender")
     private short passengerGender;
-    private double price;
+    @Column(name = "comfort_factor")
+    private double comfortFactor;
     private short position;
     @Column(name = "column_number")
     private short rowNumber;

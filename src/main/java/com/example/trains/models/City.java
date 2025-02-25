@@ -18,6 +18,8 @@ public class City {
     private int cityId;
     @Column(name = "city_name")
     private String cityName;
+    @Column(name = "range_factor")
+    private double rangeFactor;
 
     @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude

@@ -18,6 +18,8 @@ public class CarriageType {
     private int carriageTypeId;
     @Column(name = "type_name")
     private String typeName;
+    @Column(name = "place_price")
+    private double placePrice;
 
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude

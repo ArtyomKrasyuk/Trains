@@ -27,8 +27,6 @@ public class Trip {
     private Timestamp departureTime;
     @Column(name = "arrival_time")
     private Timestamp arrivalTime;
-    @Column(name = "range_factor")
-    private double rangeFactor;
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
