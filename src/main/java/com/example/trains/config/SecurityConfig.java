@@ -1,6 +1,6 @@
 package com.example.trains.config;
 
-import com.example.trains.service.ClientService;
+import com.example.trains.service.SecurityUserService;
 import com.example.trains.service.CustomLogoutHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -64,7 +64,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            ClientService userDetailsService,
+            SecurityUserService userDetailsService,
             PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
