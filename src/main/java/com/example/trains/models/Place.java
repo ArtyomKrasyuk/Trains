@@ -24,7 +24,7 @@ public class Place {
     @Column(name = "comfort_factor")
     private double comfortFactor;
     private short position;
-    @Column(name = "column_number")
+    @Column(name = "row_number")
     private short rowNumber;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
