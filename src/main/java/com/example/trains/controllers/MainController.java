@@ -6,8 +6,9 @@ import com.example.trains.exceptions.LoginExistsException;
 import com.example.trains.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,24 +20,23 @@ public class MainController {
 
     @PostMapping("/registration")
     @ResponseBody
-    public String registration(@RequestBody ClientRegistrationDTO dto, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> registration(@RequestBody @Valid ClientRegistrationDTO dto, HttpServletRequest request, HttpServletResponse response){
         try {
-            Authentication authentication = authService.registration(dto, request, response);
-            return authentication.getName();
+            authService.registration(dto, request, response);
+            return ResponseEntity.ok().build();
         } catch (LoginExistsException | AuthenticationException e) {
-            System.out.println(e.getMessage());
-            return e.getMessage();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
     @ResponseBody
-    public String login(@RequestBody ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> login(@RequestBody @Valid ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response){
         try {
-            Authentication authentication = authService.login(dto, request, response);
-            return authentication.getName();
+            authService.login(dto, request, response);
+            return ResponseEntity.ok().build();
         } catch (AuthenticationException e) {
-            return e.getMessage();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

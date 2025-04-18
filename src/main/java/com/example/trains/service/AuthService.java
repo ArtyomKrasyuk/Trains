@@ -40,8 +40,6 @@ public class AuthService {
         client.setFirstname(dto.getFirstname());
         client.setLastname(dto.getLastname());
         client.setPatronymic(dto.getPatronymic());
-        client.setGender(dto.getGender());
-        client.setPhone(dto.getPhone());
         client.setLogin(dto.getLogin());
         client.setPassword(passwordEncoder.encode(dto.getPassword()));
         client.setRole(Client.Role.CLIENT);
