@@ -34,8 +34,8 @@ public class AuthService {
     @Autowired
     private SecurityContextRepository securityContextRepository;
 
-    public Authentication registration(ClientRegistrationDTO dto, HttpServletRequest request, HttpServletResponse response) throws LoginExistsException, AuthenticationException {
-        if(clientRepository.existsByLogin(dto.getLogin())) throw new LoginExistsException("Login already taken");
+    public Authentication registration(ClientRegistrationDTO dto, HttpServletRequest request, HttpServletResponse response) throws LoginExistsException {
+        if(clientRepository.existsByLogin(dto.getLogin())) throw new LoginExistsException("Такой логин уже существует");
         Client client = new Client();
         client.setFirstname(dto.getFirstname());
         client.setLastname(dto.getLastname());
@@ -56,7 +56,7 @@ public class AuthService {
         return authentication;
     }
 
-    public Authentication login(ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response) throws AuthenticationException{
+    public Authentication login(ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response){
         UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(dto.getLogin(), dto.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         if(authentication.isAuthenticated()){
@@ -66,5 +66,9 @@ public class AuthService {
             securityContextRepository.saveContext(context, request, response);
         }
         return authentication;
+    }
+
+    public String getLogin(){
+        return securityContextHolderStrategy.getContext().getAuthentication().getName();
     }
 }

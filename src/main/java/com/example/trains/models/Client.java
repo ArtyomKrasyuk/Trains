@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.sql.Date;
 import java.util.Set;
 
 @Data
@@ -23,6 +25,7 @@ public class Client{
     private String firstname;
     private String lastname;
     private String patronymic;
+    private Date birthday;
     private short gender;
     private String phone;
     @Column(unique = true)
