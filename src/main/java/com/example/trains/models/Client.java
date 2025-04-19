@@ -14,8 +14,8 @@ import java.util.Set;
 @Table(name = "client")
 public class Client{
     public enum Role{
-        CLIENT,
-        ADMIN
+        ROLE_CLIENT,
+        ROLE_ADMIN
     }
 
     @Id

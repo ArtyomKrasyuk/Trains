@@ -43,7 +43,7 @@ public class SecurityConfig {
                 }))
                 .securityContext(context -> context.securityContextRepository(securityContextRepository()))
                 .requestCache(RequestCacheConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/**").authenticated()
+                .authorizeHttpRequests(request -> request.requestMatchers("/client/**").hasRole("CLIENT")
                         .anyRequest().permitAll())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

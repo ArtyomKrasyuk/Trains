@@ -140,7 +140,7 @@ public class MainController {
         }
     }
 
-    @GetMapping("/api/hello")
+    @GetMapping("/client/hello")
     @ResponseBody
     public String hello(){
         return "hello";
