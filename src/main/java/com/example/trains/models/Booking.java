@@ -31,4 +31,22 @@ public class Booking {
     @Column(name = "who_issued")
     private String whoIssued;
     private double price;
+
+    public Booking(
+            Client client,
+            Place place,
+            Trip trip,
+            String passportSeriesAndNumber,
+            Date passportIssueDate,
+            String whoIssued,
+            double price
+    ){
+        this.client = client;
+        this.place = place;
+        this.trip = trip;
+        this.passportSeriesAndNumber = passportSeriesAndNumber;
+        this.passportIssueDate = passportIssueDate;
+        this.whoIssued = whoIssued;
+        this.price = price;
+    }
 }

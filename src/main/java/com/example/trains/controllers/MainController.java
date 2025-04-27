@@ -2,30 +2,32 @@ package com.example.trains.controllers;
 
 import com.example.trains.dto.*;
 import com.example.trains.exceptions.LoginExistsException;
+import com.example.trains.models.City;
 import com.example.trains.service.AuthService;
 import com.example.trains.service.ClientService;
+import com.example.trains.service.DatabaseService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Controller
+@RestController
 public class MainController {
     @Autowired
     private AuthService authService;
     @Autowired
     private ClientService clientService;
+    @Autowired
+    private DatabaseService databaseService;
 
     @PostMapping("/registration")
-    @ResponseBody
     public ResponseEntity<?> registration(@RequestBody @Valid ClientRegistrationDTO dto, HttpServletRequest request, HttpServletResponse response){
         try {
             authService.registration(dto, request, response);
@@ -36,7 +38,6 @@ public class MainController {
     }
 
     @PostMapping("/login")
-    @ResponseBody
     public ResponseEntity<?> login(@RequestBody @Valid ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response){
         try {
             authService.login(dto, request, response);
@@ -140,8 +141,64 @@ public class MainController {
         }
     }
 
+    //------------------------------------------------------Selection of seats------------------------------------------
+    @GetMapping("/trip/{tripId}")
+    public ResponseEntity<?> getSeats(@PathVariable int tripId){
+        try{
+            TrainDTO dto = databaseService.getTrain(tripId);
+            return ResponseEntity.ok(dto);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    //------------------------------------------------------Adding data-------------------------------------------------
+    @PostMapping("/add-city")
+    public ResponseEntity<?> addCity(@RequestBody CityDTO dto){
+        try{
+            databaseService.addCity(dto);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/add-carriage-type")
+    public ResponseEntity<?> addCarriageType(@RequestBody CarriageTypeDTO dto){
+        try{
+            databaseService.addCarriageType(dto);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/add-train")
+    public ResponseEntity<?> addTrain(@RequestBody @Valid TrainDTO dto){
+        try{
+            databaseService.addTrain(dto);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/add-trip")
+    public ResponseEntity<?> addTrip(@RequestBody TripDTO dto){
+        try{
+            databaseService.addTrip(dto);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
     @GetMapping("/client/hello")
-    @ResponseBody
     public String hello(){
         return "hello";
     }

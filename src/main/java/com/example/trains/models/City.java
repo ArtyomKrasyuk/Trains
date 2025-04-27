@@ -24,4 +24,9 @@ public class City {
     @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     private Set<Trip> trips;
+
+    public City(String cityName, double rangeFactor){
+        this.cityName = cityName;
+        this.rangeFactor = rangeFactor;
+    }
 }

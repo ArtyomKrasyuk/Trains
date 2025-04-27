@@ -24,4 +24,9 @@ public class CarriageType {
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     private Set<Carriage> carriages;
+
+    public CarriageType(String typeName, double placePrice){
+        this.typeName = typeName;
+        this.placePrice = placePrice;
+    }
 }

@@ -24,10 +24,15 @@ public class Place {
     @Column(name = "comfort_factor")
     private double comfortFactor;
     private short position;
-    @Column(name = "row_number")
-    private short rowNumber;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     private Set<Booking> bookings;
+
+    public Place(Carriage carriage, short passengerGender, double comfortFactor, short position){
+        this.carriage = carriage;
+        this.passengerGender = passengerGender;
+        this.comfortFactor = comfortFactor;
+        this.position = position;
+    }
 }

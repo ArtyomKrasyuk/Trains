@@ -26,4 +26,8 @@ public class Train {
     @OneToMany(mappedBy = "train", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     private Set<Trip> trips;
+
+    public Train(String trainName){
+        this.trainName = trainName;
+    }
 }

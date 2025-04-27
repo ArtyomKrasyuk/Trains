@@ -31,4 +31,11 @@ public class Trip {
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     private Set<Booking> bookings;
+
+    public Trip(Train train, City destination, Timestamp departureTime, Timestamp arrivalTime){
+        this.train = train;
+        this.destination = destination;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+    }
 }
