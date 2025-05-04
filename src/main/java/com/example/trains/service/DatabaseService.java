@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,9 +30,16 @@ public class DatabaseService {
     private TrainRepository trainRepository;
     @Autowired
     private TripRepository tripRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+    @Autowired
+    private ClientRepository clientRepository;
+    @Autowired
+    private PassengerRepository passengerRepository;
 
     public TrainDTO getTrain(int tripId){
         Trip trip = tripRepository.findById(tripId).orElseThrow();
+        Iterable<Booking> booking = bookingRepository.findByTrip(trip);
         double city_factor = trip.getDestination().getRangeFactor();
         Train train = trip.getTrain();
 
@@ -38,10 +47,15 @@ public class DatabaseService {
         for(Carriage carriage: train.getCarriages()){
             ArrayList<PlaceDTO> placeDTOS = new ArrayList<>();
             for(Place place: carriage.getPlaces()){
+                boolean flag = false;
+                for(Booking elem: booking){
+                    if(elem.getPlace().getPlaceId() == place.getPlaceId()) flag = true;
+                }
                 placeDTOS.add(new PlaceDTO(
                         place.getPosition(),
                         carriage.getType().getPlacePrice() * city_factor * place.getComfortFactor(),
-                        place.getPassengerGender()
+                        place.getPassengerGender(),
+                        flag
                 ));
             }
             placeDTOS.sort(Comparator.comparing(PlaceDTO::getPosition));
@@ -99,5 +113,72 @@ public class DatabaseService {
         Timestamp departureTime = Timestamp.valueOf(departureTimeString);
         Timestamp arrivalTime = Timestamp.valueOf(arrivalTimeString);
         tripRepository.save(new Trip(train, destination, departureTime, arrivalTime));
+    }
+
+    public boolean book(BookingsDTO dto, String login){
+        Trip trip = tripRepository.findById(dto.getTripId()).orElseThrow();
+        Iterable<Booking> booking = bookingRepository.findByTrip(trip);
+        for(BookingDTO bookingDTO: dto.getBookings()){
+            Place place = null;
+            for(Carriage carriage: trip.getTrain().getCarriages()){
+                if(carriage.getCarriageNumber() == bookingDTO.getCarriageNumber()){
+                    for(Place place1: carriage.getPlaces()){
+                        if(place1.getPosition() == bookingDTO.getPosition()) place = place1;
+                    }
+                }
+            }
+            if(place == null) return false;
+            boolean booked = false;
+            for(Booking elem: booking){
+                if(elem.getPlace().getPlaceId() == place.getPlaceId()) {
+                    booked = true;
+                    break;
+                }
+            }
+            if(booked) return false;
+
+            Client client = clientRepository.findByLogin(login).orElseThrow();
+
+            String birthday = dto.getBirthday();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            LocalDate localDate = LocalDate.parse(birthday, formatter);
+            Date date = Date.valueOf(localDate);
+
+            Passenger passenger = new Passenger(
+                    dto.getFirstname(),
+                    dto.getLastname(),
+                    dto.getPatronymic(),
+                    date,
+                    dto.getGender(),
+                    dto.getPhone(),
+                    dto.getEmail(),
+                    dto.getPassport()
+            );
+
+            bookingRepository.save(new Booking(
+                    client,
+                    place,
+                    trip,
+                    passenger,
+                    bookingDTO.getPrice()
+            ));
+        }
+        return true;
+    }
+
+    public ArrayList<TripDTO> getTrips(){
+        Iterable<Trip> trips = tripRepository.findAllUpcomingTrips();
+        ArrayList<TripDTO> list = new ArrayList<>();
+        for(Trip trip: trips){
+            TripDTO tripDTO = new TripDTO(
+                    trip.getTripId(),
+                    trip.getTrain().getTrainId(),
+                    trip.getDestination().getCityName(),
+                    trip.getDepartureTime().toString(),
+                    trip.getArrivalTime().toString()
+            );
+            list.add(tripDTO);
+        }
+        return list;
     }
 }

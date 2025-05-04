@@ -1,5 +1,6 @@
 package com.example.trains.service;
 
+import com.example.trains.dto.ClientDTO;
 import com.example.trains.exceptions.LoginExistsException;
 import com.example.trains.models.Client;
 import com.example.trains.repos.ClientRepository;
@@ -62,5 +63,20 @@ public class ClientService {
         Client client = repository.findByLogin(login).orElseThrow();
         client.setPassword(password);
         repository.save(client);
+    }
+
+    public ClientDTO getClientData(String login){
+        Client client = repository.findByLogin(login).orElseThrow();
+        String birthday = "";
+        if(client.getBirthday() != null) birthday = client.getBirthday().toString();
+        return new ClientDTO(
+                client.getFirstname(),
+                client.getLastname(),
+                client.getPatronymic(),
+                client.getLogin(),
+                client.getGender(),
+                client.getPhone(),
+                birthday
+        );
     }
 }

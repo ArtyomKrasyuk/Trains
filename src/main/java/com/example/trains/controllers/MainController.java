@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 @RestController
 public class MainController {
@@ -141,12 +142,34 @@ public class MainController {
         }
     }
 
-    //------------------------------------------------------Selection of seats------------------------------------------
+    @GetMapping("/client/get-data")
+    public ResponseEntity<?> getClientData(){
+        try{
+            ClientDTO dto = clientService.getClientData(authService.getLogin());
+            return ResponseEntity.ok(dto);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    //------------------------------------------------------Getting data------------------------------------------------
     @GetMapping("/trip/{tripId}")
     public ResponseEntity<?> getSeats(@PathVariable int tripId){
         try{
             TrainDTO dto = databaseService.getTrain(tripId);
             return ResponseEntity.ok(dto);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/trips")
+    public ResponseEntity<?> getTrips(){
+        try{
+            ArrayList<TripDTO> list = databaseService.getTrips();
+            return ResponseEntity.ok(list);
         }
         catch (Exception ex){
             return ResponseEntity.internalServerError().body(ex.getMessage());
@@ -198,8 +221,19 @@ public class MainController {
         }
     }
 
-    @GetMapping("/client/hello")
-    public String hello(){
-        return "hello";
+    @PostMapping("/client/book")
+    public ResponseEntity<?> book(@RequestBody BookingsDTO dto){
+        try{
+            boolean result = databaseService.book(dto, authService.getLogin());
+            return ResponseEntity.ok(result);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/client/test")
+    public ResponseEntity<?> test(){
+        return ResponseEntity.ok().build();
     }
 }

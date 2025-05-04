@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
-
 @Data
 @NoArgsConstructor
 @Entity
@@ -24,29 +22,21 @@ public class Booking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trip_id", referencedColumnName = "trip_id")
     private Trip trip;
-    @Column(name = "passport_series_and_number")
-    private String passportSeriesAndNumber;
-    @Column(name = "passport_issue_date")
-    private Date passportIssueDate;
-    @Column(name = "who_issued")
-    private String whoIssued;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "passenger_id", referencedColumnName = "passenger_id")
+    private Passenger passenger;
     private double price;
 
     public Booking(
             Client client,
             Place place,
             Trip trip,
-            String passportSeriesAndNumber,
-            Date passportIssueDate,
-            String whoIssued,
+            Passenger passenger,
             double price
     ){
         this.client = client;
         this.place = place;
         this.trip = trip;
-        this.passportSeriesAndNumber = passportSeriesAndNumber;
-        this.passportIssueDate = passportIssueDate;
-        this.whoIssued = whoIssued;
         this.price = price;
     }
 }

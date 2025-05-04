@@ -15,4 +15,5 @@ public class PlaceDTO {
     @Min(0)
     @Max(2)
     private short gender;
+    private boolean booked;
 }
