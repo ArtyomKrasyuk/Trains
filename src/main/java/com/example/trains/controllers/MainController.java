@@ -176,6 +176,17 @@ public class MainController {
         }
     }
 
+    @GetMapping("/trip-info/{tripId}")
+    public ResponseEntity<?> getTripInfo(@PathVariable int tripId){
+        try{
+            TripDTO dto = databaseService.getTrip(tripId);
+            return ResponseEntity.ok(dto);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+
     //------------------------------------------------------Adding data-------------------------------------------------
     @PostMapping("/add-city")
     public ResponseEntity<?> addCity(@RequestBody CityDTO dto){

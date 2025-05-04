@@ -181,4 +181,15 @@ public class DatabaseService {
         }
         return list;
     }
+
+    public TripDTO getTrip(int tripId){
+        Trip trip = tripRepository.findById(tripId).orElseThrow();
+        return new TripDTO(
+                trip.getTripId(),
+                trip.getTrain().getTrainId(),
+                trip.getDestination().getCityName(),
+                trip.getDepartureTime().toString(),
+                trip.getArrivalTime().toString()
+        );
+    }
 }
