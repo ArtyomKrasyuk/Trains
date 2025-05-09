@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class GenderChangingDTO {
-    @Min(value = 1, message = "Пол указывается цифрой: 1 - мужской, 2 - женский")
-    @Max(value = 2, message = "Пол указывается цифрой: 1 - мужской, 2 - женский")
-    private short gender;
+    @Min(value = 1, message = "Неправильный ввод пола")
+    @Max(value = 2, message = "Неправильный ввод пола")
+    private short value;
 }

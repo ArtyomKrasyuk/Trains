@@ -2,7 +2,6 @@ package com.example.trains.controllers;
 
 import com.example.trains.dto.*;
 import com.example.trains.exceptions.LoginExistsException;
-import com.example.trains.models.City;
 import com.example.trains.service.AuthService;
 import com.example.trains.service.ClientService;
 import com.example.trains.service.DatabaseService;
@@ -10,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +34,7 @@ public class MainController {
             authService.registration(dto, request, response);
             return ResponseEntity.ok().build();
         } catch (LoginExistsException | AuthenticationException e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(e.getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ public class MainController {
             authService.login(dto, request, response);
             return ResponseEntity.ok().build();
         } catch (AuthenticationException e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(e.getMessage());
         }
     }
 
@@ -53,51 +53,51 @@ public class MainController {
     @PatchMapping("/client/change-firstname")
     public ResponseEntity<?> changeFirstname(@RequestBody @Valid FirstnameChangingDTO dto){
         try{
-            clientService.changeFirstname(authService.getLogin(), dto.getFirstname());
+            clientService.changeFirstname(authService.getLogin(), dto.getValue());
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
     @PatchMapping("/client/change-lastname")
     public ResponseEntity<?> changeLastname(@RequestBody @Valid LastnameChangingDTO dto){
         try{
-            clientService.changeLastname(authService.getLogin(), dto.getLastname());
+            clientService.changeLastname(authService.getLogin(), dto.getValue());
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
     @PatchMapping("/client/change-patronymic")
     public ResponseEntity<?> changePatronymic(@RequestBody @Valid PatronymicChangingDTO dto){
         try{
-            clientService.changePatronymic(authService.getLogin(), dto.getPatronymic());
+            clientService.changePatronymic(authService.getLogin(), dto.getValue());
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
     @PatchMapping("/client/change-login")
     public ResponseEntity<?> changeLogin(@RequestBody @Valid LoginChangingDTO dto){
         try{
-            clientService.changeLogin(authService.getLogin(), dto.getLogin());
+            clientService.changeLogin(authService.getLogin(), dto.getValue());
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
     @PatchMapping("/client/change-birthday")
     public ResponseEntity<?> changeBirthday(@RequestBody @Valid BirthdayChangingDTO dto){
         try{
-            String birthday = dto.getBirthday();
+            String birthday = dto.getValue();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             LocalDate localDate = LocalDate.parse(birthday, formatter);
             Date date = Date.valueOf(localDate);
@@ -105,40 +105,40 @@ public class MainController {
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
     @PatchMapping("/client/change-phone")
     public ResponseEntity<?> changePhone(@RequestBody @Valid PhoneChangingDTO dto){
         try{
-            clientService.changePhone(authService.getLogin(), dto.getPhone());
+            clientService.changePhone(authService.getLogin(), dto.getValue());
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
     @PatchMapping("/client/change-gender")
     public ResponseEntity<?> changeGender(@RequestBody @Valid GenderChangingDTO dto){
         try{
-            clientService.changeGender(authService.getLogin(), dto.getGender());
+            clientService.changeGender(authService.getLogin(), dto.getValue());
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
     @PatchMapping("/client/change-password")
     public ResponseEntity<?> changePassword(@RequestBody @Valid PasswordChangingDTO dto){
         try{
-            clientService.changePassword(authService.getLogin(), dto.getPassword());
+            clientService.changePassword(authService.getLogin(), dto.getOldPassword(), dto.getNewPassword());
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -149,7 +149,7 @@ public class MainController {
             return ResponseEntity.ok(dto);
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -161,7 +161,7 @@ public class MainController {
             return ResponseEntity.ok(dto);
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -172,7 +172,7 @@ public class MainController {
             return ResponseEntity.ok(list);
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -183,7 +183,7 @@ public class MainController {
             return ResponseEntity.ok(dto);
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -195,7 +195,7 @@ public class MainController {
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -206,7 +206,7 @@ public class MainController {
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -217,7 +217,7 @@ public class MainController {
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -228,7 +228,7 @@ public class MainController {
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -239,7 +239,7 @@ public class MainController {
             return ResponseEntity.ok(result);
         }
         catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 

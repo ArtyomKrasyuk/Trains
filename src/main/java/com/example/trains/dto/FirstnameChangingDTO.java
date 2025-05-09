@@ -8,5 +8,5 @@ import lombok.Data;
 public class FirstnameChangingDTO {
     @Size(min = 2, max = 20, message = "Имя должна содержать от 1 до 45 символов")
     @NotBlank(message = "Имя не может быть пустым")
-    private String firstname;
+    private String value;
 }
