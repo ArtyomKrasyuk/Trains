@@ -153,6 +153,17 @@ public class MainController {
         }
     }
 
+    @DeleteMapping("/client/delete-ticket/{ticketNumber}")
+    public ResponseEntity<?> deleteTicket(@PathVariable String ticketNumber){
+        try{
+            databaseService.deleteBooking(ticketNumber);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
+
     //------------------------------------------------------Getting data------------------------------------------------
     @GetMapping("/trip/{tripId}")
     public ResponseEntity<?> getSeats(@PathVariable int tripId){
@@ -181,6 +192,39 @@ public class MainController {
         try{
             TripDTO dto = databaseService.getTrip(tripId);
             return ResponseEntity.ok(dto);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/client/tickets")
+    public ResponseEntity<?> getTickets(){
+        try{
+            ArrayList<TicketDTO> tickets = databaseService.getTickets(authService.getLogin());
+            return ResponseEntity.ok(tickets);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/get-cities")
+    public ResponseEntity<?> getCities(){
+        try{
+            ArrayList<CityDTO> cities = databaseService.getCities();
+            return ResponseEntity.ok(cities);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/get-train-numbers")
+    public ResponseEntity<?> getTrainNumbers(){
+        try{
+            ArrayList<TrainNumberDTO> trainNumbers = databaseService.getTrainNumbers();
+            return ResponseEntity.ok(trainNumbers);
         }
         catch (Exception ex){
             return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());

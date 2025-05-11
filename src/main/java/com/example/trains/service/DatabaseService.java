@@ -155,6 +155,8 @@ public class DatabaseService {
                     dto.getPassport()
             );
 
+            passengerRepository.save(passenger);
+
             bookingRepository.save(new Booking(
                     client,
                     place,
@@ -191,5 +193,59 @@ public class DatabaseService {
                 trip.getDepartureTime().toString(),
                 trip.getArrivalTime().toString()
         );
+    }
+
+    public ArrayList<TicketDTO> getTickets(String login){
+        Client client = clientRepository.findByLogin(login).orElseThrow();
+        Iterable<Booking> bookings = bookingRepository.findByClient(client);
+        ArrayList<TicketDTO> tickets = new ArrayList<>();
+        for(Booking booking: bookings){
+            Trip trip = booking.getTrip();
+            Passenger passenger = booking.getPassenger();
+            Place place = booking.getPlace();
+            TicketDTO ticket = new TicketDTO(
+                    trip.getTrain().getTrainId(),
+                    trip.getDestination().getCityName(),
+                    trip.getDepartureTime().toString(),
+                    trip.getArrivalTime().toString(),
+                    passenger.getFirstname(),
+                    passenger.getLastname(),
+                    passenger.getPatronymic(),
+                    passenger.getBirthday().toString(),
+                    passenger.getPassportSeriesAndNumber(),
+                    booking.getTicketNumber(),
+                    place.getCarriage().getCarriageNumber(),
+                    place.getPosition(),
+                    place.getCarriage().getType().getTypeName()
+            );
+            tickets.add(ticket);
+        }
+        return tickets;
+    }
+
+    public void deleteBooking(String ticketNumber){
+        Booking booking = bookingRepository.findByTicketNumber(ticketNumber).orElseThrow();
+        passengerRepository.delete(booking.getPassenger());
+        bookingRepository.delete(booking);
+    }
+
+    public ArrayList<CityDTO> getCities(){
+        Iterable<City> cities = cityRepository.findAll();
+        ArrayList<CityDTO> result = new ArrayList<>();
+        for(City city: cities){
+            CityDTO cityDTO = new CityDTO(city.getCityName(), city.getRangeFactor());
+            result.add(cityDTO);
+        }
+        return result;
+    }
+
+    public ArrayList<TrainNumberDTO> getTrainNumbers(){
+        Iterable<Train> trains = trainRepository.findAll();
+        ArrayList<TrainNumberDTO> numbers = new ArrayList<>();
+        for(Train train: trains){
+            TrainNumberDTO dto = new TrainNumberDTO(train.getTrainId());
+            numbers.add(dto);
+        }
+        return numbers;
     }
 }

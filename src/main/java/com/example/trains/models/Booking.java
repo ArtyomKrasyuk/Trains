@@ -26,6 +26,8 @@ public class Booking {
     @JoinColumn(name = "passenger_id", referencedColumnName = "passenger_id")
     private Passenger passenger;
     private double price;
+    @Column(name = "ticket_number")
+    private String ticketNumber;
 
     public Booking(
             Client client,
@@ -37,6 +39,14 @@ public class Booking {
         this.client = client;
         this.place = place;
         this.trip = trip;
+        this.passenger = passenger;
         this.price = price;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(trip.getDepartureTime().getTime())
+                .append(trip.getTrain().getTrainId())
+                .append(place.getCarriage().getCarriageNumber())
+                .append(place.getPosition());
+        this.ticketNumber = sb.toString();
     }
 }
