@@ -176,6 +176,17 @@ public class MainController {
         }
     }
 
+    @GetMapping("/train/{trainId}")
+    public ResponseEntity<?> getTrainAdmin(@PathVariable int trainId){
+        try{
+            TrainDTO dto = databaseService.getTrainAdmin(trainId);
+            return ResponseEntity.ok(dto);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
+
     @GetMapping("/trips")
     public ResponseEntity<?> getTrips(){
         try{
@@ -255,9 +266,20 @@ public class MainController {
     }
 
     @PostMapping("/add-train")
-    public ResponseEntity<?> addTrain(@RequestBody @Valid TrainDTO dto){
+    public ResponseEntity<?> addTrain(@RequestBody @Valid TrainInputDTO dto){
         try{
             databaseService.addTrain(dto);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
+
+    @PatchMapping("/change-train")
+    public ResponseEntity<?> changeTrain(@RequestBody @Valid TrainInputDTO dto){;
+        try{
+            databaseService.changeTrain(dto);
             return ResponseEntity.ok().build();
         }
         catch (Exception ex){

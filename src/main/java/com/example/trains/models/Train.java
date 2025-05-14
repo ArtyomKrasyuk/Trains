@@ -13,7 +13,6 @@ import java.util.Set;
 @Table(name = "train")
 public class Train {
     @Id
-    @GeneratedValue
     @Column(name = "train_id")
     private int trainId;
     @Column(name = "train_name")
@@ -27,7 +26,8 @@ public class Train {
     @EqualsAndHashCode.Exclude
     private Set<Trip> trips;
 
-    public Train(String trainName){
+    public Train(int trainId, String trainName){
+        this.trainId = trainId;
         this.trainName = trainName;
     }
 }

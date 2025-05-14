@@ -72,6 +72,28 @@ public class DatabaseService {
         return new TrainDTO(train.getTrainId(), train.getTrainName(), carriageDTOS);
     }
 
+    public TrainDTO getTrainAdmin(int trainId){
+        Train train = trainRepository.findById(trainId).orElseThrow();
+        ArrayList<CarriageDTO> carriages = new ArrayList<>();
+        for(Carriage carriage: train.getCarriages()){
+            CarriageDTO dto = new CarriageDTO(
+                    carriage.getCarriageNumber(),
+                    carriage.getType().getTypeName(),
+                    carriage.getNumberOfSeats(),
+                    carriage.getTopBlockWidth(),
+                    carriage.getBottomBlockWidth(),
+                    null
+            );
+            carriages.add(dto);
+        }
+        carriages.sort(Comparator.comparing(CarriageDTO::getNumber));
+        return new TrainDTO(
+                trainId,
+                train.getTrainName(),
+                carriages
+        );
+    }
+
     public void addCity(CityDTO dto){
         cityRepository.save(new City(dto.getCityName(), dto.getRangeFactor()));
     }
@@ -80,9 +102,9 @@ public class DatabaseService {
         carriageTypeRepository.save(new CarriageType(dto.getTypeName(), dto.getPlacePrice()));
     }
 
-    public void addTrain(TrainDTO dto){
-        Train train = trainRepository.save(new Train(dto.getTrainName()));
-        for(CarriageDTO carriageDTO: dto.getCarriages()){
+    public void addTrain(TrainInputDTO dto){
+        Train train = trainRepository.save(new Train(dto.getTrainId(), dto.getTrainName()));
+        for(CarriageInputDTO carriageDTO: dto.getCarriages()){
             CarriageType carriageType = carriageTypeRepository.findByTypeName(carriageDTO.getType()).orElseThrow();
             Carriage carriage = carriageRepository.save(new Carriage(
                     carriageDTO.getNumberOfSeats(),
@@ -92,13 +114,73 @@ public class DatabaseService {
                     train,
                     carriageType
             ));
-            for(PlaceDTO placeDTO: carriageDTO.getPlaces()){
+            for(PlaceInputDTO placeDTO: carriageDTO.getPlaces()){
                 placeRepository.save(new Place(
                         carriage,
                         placeDTO.getGender(),
-                        placeDTO.getPrice() / carriage.getType().getPlacePrice(),
+                        placeDTO.getComfortFactor(),
                         placeDTO.getPosition()
                 ));
+            }
+        }
+    }
+
+    public void changeTrain(TrainInputDTO dto){
+        Train train = trainRepository.findById(dto.getTrainId()).orElseThrow();
+        for(Carriage carriage: train.getCarriages()){
+            boolean exists = false;
+            for(CarriageInputDTO carriageDTO: dto.getCarriages()){
+                if (carriage.getCarriageNumber() == carriageDTO.getNumber()) {
+                    exists = true;
+                    break;
+                }
+            }
+            if(!exists){
+                carriage.setTrain(null);
+                train.getCarriages().remove(carriage);
+                carriageRepository.save(carriage);
+            }
+        }
+
+        for(CarriageInputDTO carriageDTO: dto.getCarriages()){
+            boolean exists = false;
+            for(Carriage carriage: train.getCarriages()){
+                if(carriageDTO.getNumber() == carriage.getCarriageNumber()) {
+                    exists = true;
+                    if(carriageDTO.getNumberOfSeats() != carriage.getNumberOfSeats() ||
+                            !carriageDTO.getType().equals(carriage.getType().getTypeName()) ||
+                            carriageDTO.getTopBlockWidth() != carriage.getTopBlockWidth() ||
+                            carriageDTO.getTopBlockWidth() != carriage.getBottomBlockWidth()
+                    ){
+                        carriage.setTrain(null);
+                        //train.getCarriages().remove(carriage);
+                        carriageRepository.save(carriage);
+                        CarriageType type = carriageTypeRepository.findByTypeName(carriageDTO.getType()).orElseThrow();
+                        Carriage newCarriage = new Carriage(
+                                carriageDTO.getNumberOfSeats(),
+                                carriageDTO.getNumber(),
+                                carriageDTO.getTopBlockWidth(),
+                                carriageDTO.getBottomBlockWidth(),
+                                train,
+                                type
+                        );
+                        carriageRepository.save(newCarriage);
+                        //train.getCarriages().add(newCarriage);
+                    }
+                }
+            }
+            if(!exists){
+                CarriageType type = carriageTypeRepository.findByTypeName(carriageDTO.getType()).orElseThrow();
+                Carriage newCarriage = new Carriage(
+                        carriageDTO.getNumberOfSeats(),
+                        carriageDTO.getNumber(),
+                        carriageDTO.getTopBlockWidth(),
+                        carriageDTO.getBottomBlockWidth(),
+                        train,
+                        type
+                );
+                carriageRepository.save(newCarriage);
+                train.getCarriages().add(newCarriage);
             }
         }
     }
@@ -246,6 +328,7 @@ public class DatabaseService {
             TrainNumberDTO dto = new TrainNumberDTO(train.getTrainId());
             numbers.add(dto);
         }
+        numbers.sort(Comparator.comparing(TrainNumberDTO::getTrainNumber));
         return numbers;
     }
 }
