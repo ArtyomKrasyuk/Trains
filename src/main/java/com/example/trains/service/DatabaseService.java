@@ -4,6 +4,7 @@ import com.example.trains.dto.*;
 import com.example.trains.models.*;
 import com.example.trains.repos.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -188,7 +189,7 @@ public class DatabaseService {
     public void addTrip(TripDTO dto){
         Train train = trainRepository.findById(dto.getTrainId()).orElseThrow();
         City destination = cityRepository.findByCityName(dto.getDestination()).orElseThrow();
-        String pattern = "dd.MM.yyyy HH:mm:ss";
+        String pattern = "yyyy-MM-dd HH:mm";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         LocalDateTime departureTimeString = LocalDateTime.from(formatter.parse(dto.getDepartureTime()));
         LocalDateTime arrivalTimeString = LocalDateTime.from(formatter.parse(dto.getArrivalTime()));
@@ -330,5 +331,34 @@ public class DatabaseService {
         }
         numbers.sort(Comparator.comparing(TrainNumberDTO::getTrainNumber));
         return numbers;
+    }
+
+    public void deleteTrip(int tripId){
+        tripRepository.deleteById(tripId);
+    }
+
+    public void updateTrip(TripDTO dto){
+        String pattern = "yyyy-MM-dd HH:mm";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime departureTimeString = LocalDateTime.from(formatter.parse(dto.getDepartureTime()));
+        LocalDateTime arrivalTimeString = LocalDateTime.from(formatter.parse(dto.getArrivalTime()));
+        Timestamp departureTime = Timestamp.valueOf(departureTimeString);
+        Timestamp arrivalTime = Timestamp.valueOf(arrivalTimeString);
+        Trip trip = tripRepository.findById(dto.getTripId()).orElseThrow();
+        if(trip.getTrain().getTrainId() != dto.getTrainId()){
+            Train train = trainRepository.findById(dto.getTrainId()).orElseThrow();
+            trip.setTrain(train);
+        }
+        if(!trip.getDestination().getCityName().equals(dto.getDestination())){
+            City destination = cityRepository.findByCityName(dto.getDestination()).orElseThrow();
+            trip.setDestination(destination);
+        }
+        if(!trip.getDepartureTime().equals(departureTime)){
+            trip.setDepartureTime(departureTime);
+        }
+        if(!trip.getArrivalTime().equals(arrivalTime)){
+            trip.setArrivalTime(arrivalTime);
+        }
+        tripRepository.save(trip);
     }
 }

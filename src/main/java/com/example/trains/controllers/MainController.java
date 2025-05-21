@@ -287,6 +287,17 @@ public class MainController {
         }
     }
 
+    @PatchMapping("/change-trip")
+    public ResponseEntity<?> changeTrip(@RequestBody TripDTO dto){
+        try{
+            databaseService.updateTrip(dto);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
+
     @PostMapping("/add-trip")
     public ResponseEntity<?> addTrip(@RequestBody TripDTO dto){
         try{
@@ -310,7 +321,25 @@ public class MainController {
     }
 
     @GetMapping("/client/test")
-    public ResponseEntity<?> test(){
+    public ResponseEntity<?> testClient(){
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/admin/test")
+    public ResponseEntity<?> testAdmin(){
+        return ResponseEntity.ok().build();
+    }
+
+    //----------------------------------------------------Deleting data-------------------------------------------------
+
+    @DeleteMapping("/trip/{tripId}")
+    public ResponseEntity<?> deleteTrip(@PathVariable int tripId){
+        try{
+            databaseService.deleteTrip(tripId);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
     }
 }
