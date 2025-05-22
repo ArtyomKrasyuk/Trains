@@ -2,6 +2,7 @@ package com.example.trains.controllers;
 
 import com.example.trains.dto.*;
 import com.example.trains.exceptions.LoginExistsException;
+import com.example.trains.exceptions.NotAdminException;
 import com.example.trains.service.AuthService;
 import com.example.trains.service.ClientService;
 import com.example.trains.service.DatabaseService;
@@ -44,6 +45,20 @@ public class MainController {
             authService.login(dto, request, response);
             return ResponseEntity.ok().build();
         } catch (AuthenticationException e) {
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/login-admin")
+    public ResponseEntity<?> loginAdmin(@RequestBody @Valid ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response){
+        try {
+            authService.loginAdmin(dto, request, response);
+            return ResponseEntity.ok().build();
+        }
+        catch (NotAdminException e){
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(e.getMessage());
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(e.getMessage());
         }
     }
@@ -265,7 +280,7 @@ public class MainController {
         }
     }
 
-    @PostMapping("/add-train")
+    @PostMapping("/admin/add-train")
     public ResponseEntity<?> addTrain(@RequestBody @Valid TrainInputDTO dto){
         try{
             databaseService.addTrain(dto);
@@ -276,7 +291,7 @@ public class MainController {
         }
     }
 
-    @PatchMapping("/change-train")
+    @PatchMapping("/admin/change-train")
     public ResponseEntity<?> changeTrain(@RequestBody @Valid TrainInputDTO dto){;
         try{
             databaseService.changeTrain(dto);
@@ -287,7 +302,7 @@ public class MainController {
         }
     }
 
-    @PatchMapping("/change-trip")
+    @PatchMapping("/admin/change-trip")
     public ResponseEntity<?> changeTrip(@RequestBody TripDTO dto){
         try{
             databaseService.updateTrip(dto);
@@ -298,7 +313,7 @@ public class MainController {
         }
     }
 
-    @PostMapping("/add-trip")
+    @PostMapping("/admin/add-trip")
     public ResponseEntity<?> addTrip(@RequestBody TripDTO dto){
         try{
             databaseService.addTrip(dto);
@@ -332,7 +347,7 @@ public class MainController {
 
     //----------------------------------------------------Deleting data-------------------------------------------------
 
-    @DeleteMapping("/trip/{tripId}")
+    @DeleteMapping("/admin/trip/{tripId}")
     public ResponseEntity<?> deleteTrip(@PathVariable int tripId){
         try{
             databaseService.deleteTrip(tripId);

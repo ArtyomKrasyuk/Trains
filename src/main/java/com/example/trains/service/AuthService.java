@@ -3,6 +3,7 @@ package com.example.trains.service;
 import com.example.trains.dto.ClientLoginDTO;
 import com.example.trains.dto.ClientRegistrationDTO;
 import com.example.trains.exceptions.LoginExistsException;
+import com.example.trains.exceptions.NotAdminException;
 import com.example.trains.models.Client;
 import com.example.trains.repos.ClientRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
@@ -59,6 +61,21 @@ public class AuthService {
         UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(dto.getLogin(), dto.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         if(authentication.isAuthenticated()){
+            SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+            context.setAuthentication(authentication);
+            securityContextHolderStrategy.setContext(context);
+            securityContextRepository.saveContext(context, request, response);
+        }
+        return authentication;
+    }
+
+    public Authentication loginAdmin(ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response) throws Exception{
+        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(dto.getLogin(), dto.getPassword());
+        Authentication authentication = authenticationManager.authenticate(token);
+        if(authentication.isAuthenticated()){
+            for(GrantedAuthority authority: authentication.getAuthorities()){
+                if(!authority.getAuthority().equals("ROLE_ADMIN")) throw new NotAdminException("Это не аккаунт админа");
+            }
             SecurityContext context = securityContextHolderStrategy.createEmptyContext();
             context.setAuthentication(authentication);
             securityContextHolderStrategy.setContext(context);
