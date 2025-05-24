@@ -4,7 +4,6 @@ import com.example.trains.dto.*;
 import com.example.trains.models.*;
 import com.example.trains.repos.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,6 +68,8 @@ public class DatabaseService {
                     placeDTOS
             ));
         }
+
+        carriageDTOS.sort(Comparator.comparing(CarriageDTO::getNumber));
 
         return new TrainDTO(train.getTrainId(), train.getTrainName(), carriageDTOS);
     }
@@ -165,8 +166,16 @@ public class DatabaseService {
                                 train,
                                 type
                         );
-                        carriageRepository.save(newCarriage);
-                        //train.getCarriages().add(newCarriage);
+                        Carriage newEntity = carriageRepository.save(newCarriage);
+                        for(PlaceInputDTO placeDTO: carriageDTO.getPlaces()){
+                            Place place = new Place(
+                                    newEntity,
+                                    placeDTO.getGender(),
+                                    placeDTO.getComfortFactor(),
+                                    placeDTO.getPosition()
+                            );
+                            placeRepository.save(place);
+                        }
                     }
                 }
             }
@@ -180,8 +189,16 @@ public class DatabaseService {
                         train,
                         type
                 );
-                carriageRepository.save(newCarriage);
-                train.getCarriages().add(newCarriage);
+                Carriage newEntity = carriageRepository.save(newCarriage);
+                for(PlaceInputDTO placeDTO: carriageDTO.getPlaces()){
+                    Place place = new Place(
+                            newEntity,
+                            placeDTO.getGender(),
+                            placeDTO.getComfortFactor(),
+                            placeDTO.getPosition()
+                    );
+                    placeRepository.save(place);
+                }
             }
         }
     }
@@ -255,12 +272,16 @@ public class DatabaseService {
         Iterable<Trip> trips = tripRepository.findAllUpcomingTrips();
         ArrayList<TripDTO> list = new ArrayList<>();
         for(Trip trip: trips){
+            int numberOfSeats = 0;
+            for(Carriage carriage: trip.getTrain().getCarriages()) numberOfSeats += carriage.getNumberOfSeats();
+            boolean hasFreePlaces = trip.getBookings().size() < numberOfSeats;
             TripDTO tripDTO = new TripDTO(
                     trip.getTripId(),
                     trip.getTrain().getTrainId(),
                     trip.getDestination().getCityName(),
                     trip.getDepartureTime().toString(),
-                    trip.getArrivalTime().toString()
+                    trip.getArrivalTime().toString(),
+                    hasFreePlaces
             );
             list.add(tripDTO);
         }
@@ -274,7 +295,8 @@ public class DatabaseService {
                 trip.getTrain().getTrainId(),
                 trip.getDestination().getCityName(),
                 trip.getDepartureTime().toString(),
-                trip.getArrivalTime().toString()
+                trip.getArrivalTime().toString(),
+                true
         );
     }
 
@@ -360,5 +382,9 @@ public class DatabaseService {
             trip.setArrivalTime(arrivalTime);
         }
         tripRepository.save(trip);
+    }
+
+    public void deleteTrain(int trainId){
+        trainRepository.deleteById(trainId);
     }
 }

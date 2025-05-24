@@ -357,4 +357,15 @@ public class MainController {
             return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
+
+    @DeleteMapping("/train/{trainId}")
+    public ResponseEntity<?> deleteTrain(@PathVariable int trainId){
+        try{
+            databaseService.deleteTrain(trainId);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
 }

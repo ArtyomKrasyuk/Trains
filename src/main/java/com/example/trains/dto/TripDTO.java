@@ -11,4 +11,5 @@ public class TripDTO {
     private String destination;
     private String departureTime;
     private String arrivalTime;
+    private boolean hasFreePlaces;
 }
