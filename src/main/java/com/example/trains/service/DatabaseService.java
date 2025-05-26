@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 
 @Service
 @Transactional
@@ -386,5 +387,35 @@ public class DatabaseService {
 
     public void deleteTrain(int trainId){
         trainRepository.deleteById(trainId);
+    }
+
+    public ArrayList<TripWithPricesDTO> getTripsWithPrices(){
+        Iterable<Trip> trips = tripRepository.findAllUpcomingTrips();
+        ArrayList<TripWithPricesDTO> list = new ArrayList<>();
+        for(Trip trip: trips){
+            HashMap<String, Double> map = new HashMap<>();
+            int numberOfSeats = 0;
+            for(Carriage carriage: trip.getTrain().getCarriages()) {
+                numberOfSeats += carriage.getNumberOfSeats();
+                String key = carriage.getType().getTypeName();
+                if(!map.containsKey(key)) map.put(key, Double.MAX_VALUE);
+                for(Place place: carriage.getPlaces()){
+                    double price = place.getComfortFactor() * carriage.getType().getPlacePrice() * trip.getDestination().getRangeFactor();
+                    if(map.get(key) > price) map.put(key, price);
+                }
+            }
+            boolean hasFreePlaces = trip.getBookings().size() < numberOfSeats;
+            TripWithPricesDTO tripDTO = new TripWithPricesDTO(
+                    trip.getTripId(),
+                    trip.getTrain().getTrainId(),
+                    trip.getDestination().getCityName(),
+                    trip.getDepartureTime().toString(),
+                    trip.getArrivalTime().toString(),
+                    hasFreePlaces,
+                    map
+            );
+            list.add(tripDTO);
+        }
+        return list;
     }
 }

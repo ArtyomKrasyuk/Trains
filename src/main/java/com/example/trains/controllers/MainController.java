@@ -213,6 +213,17 @@ public class MainController {
         }
     }
 
+    @GetMapping("/trips-with-prices")
+    public ResponseEntity<?> getTripsWithPrices(){
+        try{
+            ArrayList<TripWithPricesDTO> list = databaseService.getTripsWithPrices();
+            return ResponseEntity.ok(list);
+        }
+        catch (Exception ex){
+            return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
+    }
+
     @GetMapping("/trip-info/{tripId}")
     public ResponseEntity<?> getTripInfo(@PathVariable int tripId){
         try{

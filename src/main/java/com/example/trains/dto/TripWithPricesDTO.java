@@ -1,0 +1,18 @@
+package com.example.trains.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.util.HashMap;
+
+@Data
+@AllArgsConstructor
+public class TripWithPricesDTO {
+    private int tripId;
+    private int trainId;
+    private String destination;
+    private String departureTime;
+    private String arrivalTime;
+    private boolean hasFreePlaces;
+    HashMap<String, Double> prices;
+}
