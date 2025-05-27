@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,9 +45,9 @@ public class AuthService {
         client.setLogin(dto.getLogin());
         client.setPassword(passwordEncoder.encode(dto.getPassword()));
         client.setRole(Client.Role.ROLE_CLIENT);
-        clientRepository.save(client);
+        Client entity = clientRepository.save(client);
 
-        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(dto.getLogin(), dto.getPassword());
+        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(String.valueOf(entity.getClientId()), dto.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         if(authentication.isAuthenticated()){
             SecurityContext context = securityContextHolderStrategy.createEmptyContext();
@@ -58,7 +59,8 @@ public class AuthService {
     }
 
     public Authentication login(ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response){
-        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(dto.getLogin(), dto.getPassword());
+        int id = getUserIdFromDatabase(dto.getLogin());
+        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(String.valueOf(id), dto.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         if(authentication.isAuthenticated()){
             SecurityContext context = securityContextHolderStrategy.createEmptyContext();
@@ -70,7 +72,8 @@ public class AuthService {
     }
 
     public Authentication loginAdmin(ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response) throws Exception{
-        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(dto.getLogin(), dto.getPassword());
+        int id = getUserIdFromDatabase(dto.getLogin());
+        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(String.valueOf(id), dto.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         if(authentication.isAuthenticated()){
             for(GrantedAuthority authority: authentication.getAuthorities()){
@@ -84,7 +87,12 @@ public class AuthService {
         return authentication;
     }
 
-    public String getLogin(){
-        return securityContextHolderStrategy.getContext().getAuthentication().getName();
+    public int getLogin(){
+        return Integer.parseInt(securityContextHolderStrategy.getContext().getAuthentication().getName());
+    }
+
+    public int getUserIdFromDatabase(String login){
+        Client client =  clientRepository.findByLogin(login).orElseThrow();
+        return client.getClientId();
     }
 }

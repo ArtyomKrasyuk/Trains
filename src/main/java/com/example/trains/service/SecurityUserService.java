@@ -20,7 +20,7 @@ public class SecurityUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Client client;
         try {
-            client = repository.findByLogin(username).orElseThrow();
+            client = repository.findById(Integer.parseInt(username)).orElseThrow();
         } catch (NoSuchElementException e) {
             System.out.println(e.getMessage());
             throw new UsernameNotFoundException(e.getMessage());

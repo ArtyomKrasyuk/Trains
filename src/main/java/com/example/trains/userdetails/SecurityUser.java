@@ -14,7 +14,7 @@ public class SecurityUser implements UserDetails {
     private final String authority;
 
     public SecurityUser(Client client){
-        this.username = client.getLogin();
+        this.username = String.valueOf(client.getClientId());
         this.password = client.getPassword();
         this.authority = client.getRole().name();
     }

@@ -216,7 +216,7 @@ public class DatabaseService {
         tripRepository.save(new Trip(train, destination, departureTime, arrivalTime));
     }
 
-    public boolean book(BookingsDTO dto, String login){
+    public boolean book(BookingsDTO dto, int login){
         Trip trip = tripRepository.findById(dto.getTripId()).orElseThrow();
         Iterable<Booking> booking = bookingRepository.findByTrip(trip);
         for(BookingDTO bookingDTO: dto.getBookings()){
@@ -238,7 +238,7 @@ public class DatabaseService {
             }
             if(booked) return false;
 
-            Client client = clientRepository.findByLogin(login).orElseThrow();
+            Client client = clientRepository.findById(login).orElseThrow();
 
             String birthday = dto.getBirthday();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -301,8 +301,8 @@ public class DatabaseService {
         );
     }
 
-    public ArrayList<TicketDTO> getTickets(String login){
-        Client client = clientRepository.findByLogin(login).orElseThrow();
+    public ArrayList<TicketDTO> getTickets(int login){
+        Client client = clientRepository.findById(login).orElseThrow();
         Iterable<Booking> bookings = bookingRepository.findByClient(client);
         ArrayList<TicketDTO> tickets = new ArrayList<>();
         for(Booking booking: bookings){
