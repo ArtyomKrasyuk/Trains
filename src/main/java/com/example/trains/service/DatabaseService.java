@@ -105,7 +105,8 @@ public class DatabaseService {
         carriageTypeRepository.save(new CarriageType(dto.getTypeName(), dto.getPlacePrice()));
     }
 
-    public void addTrain(TrainInputDTO dto){
+    public void addTrain(TrainInputDTO dto) throws Exception{
+        if(trainRepository.existsById(dto.getTrainId())) throw new Exception("Поезд с таким номером существует");
         Train train = trainRepository.save(new Train(dto.getTrainId(), dto.getTrainName()));
         for(CarriageInputDTO carriageDTO: dto.getCarriages()){
             CarriageType carriageType = carriageTypeRepository.findByTypeName(carriageDTO.getType()).orElseThrow();
