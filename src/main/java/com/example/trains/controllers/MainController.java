@@ -29,26 +29,29 @@ public class MainController {
     @Autowired
     private DatabaseService databaseService;
 
+    // Метод обработки регистрации
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody @Valid ClientRegistrationDTO dto, HttpServletRequest request, HttpServletResponse response){
         try {
             authService.registration(dto, request, response);
             return ResponseEntity.ok().build();
-        } catch (LoginExistsException | AuthenticationException e) {
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(e.getMessage());
         }
     }
 
+    // Метод обработки авторизации клиента
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response){
         try {
             authService.login(dto, request, response);
             return ResponseEntity.ok().build();
-        } catch (AuthenticationException e) {
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(e.getMessage());
         }
     }
 
+    // Метод обработки авторизации администратора
     @PostMapping("/login-admin")
     public ResponseEntity<?> loginAdmin(@RequestBody @Valid ClientLoginDTO dto, HttpServletRequest request, HttpServletResponse response){
         try {
@@ -63,8 +66,9 @@ public class MainController {
         }
     }
 
-    //------------------------------------------------------Personal account--------------------------------------------
+    //------------------------------------------------------Личный кабинет--------------------------------------------
 
+    // Метод обработки изменения имени
     @PatchMapping("/client/change-firstname")
     public ResponseEntity<?> changeFirstname(@RequestBody @Valid FirstnameChangingDTO dto){
         try{
@@ -76,6 +80,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки изменения фамилии
     @PatchMapping("/client/change-lastname")
     public ResponseEntity<?> changeLastname(@RequestBody @Valid LastnameChangingDTO dto){
         try{
@@ -87,6 +92,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки изменения отчества
     @PatchMapping("/client/change-patronymic")
     public ResponseEntity<?> changePatronymic(@RequestBody @Valid PatronymicChangingDTO dto){
         try{
@@ -98,6 +104,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки изменения электронной почты
     @PatchMapping("/client/change-login")
     public ResponseEntity<?> changeLogin(@RequestBody @Valid LoginChangingDTO dto){
         try{
@@ -109,6 +116,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки изменения даты рождения
     @PatchMapping("/client/change-birthday")
     public ResponseEntity<?> changeBirthday(@RequestBody @Valid BirthdayChangingDTO dto){
         try{
@@ -124,6 +132,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки изменения номера телефона
     @PatchMapping("/client/change-phone")
     public ResponseEntity<?> changePhone(@RequestBody @Valid PhoneChangingDTO dto){
         try{
@@ -135,6 +144,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки изменения пола
     @PatchMapping("/client/change-gender")
     public ResponseEntity<?> changeGender(@RequestBody @Valid GenderChangingDTO dto){
         try{
@@ -146,6 +156,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки изменения пароля
     @PatchMapping("/client/change-password")
     public ResponseEntity<?> changePassword(@RequestBody @Valid PasswordChangingDTO dto){
         try{
@@ -157,6 +168,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса данных пользователя
     @GetMapping("/client/get-data")
     public ResponseEntity<?> getClientData(){
         try{
@@ -168,6 +180,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса удаления билета
     @DeleteMapping("/client/delete-ticket/{ticketNumber}")
     public ResponseEntity<?> deleteTicket(@PathVariable String ticketNumber){
         try{
@@ -179,7 +192,9 @@ public class MainController {
         }
     }
 
-    //------------------------------------------------------Getting data------------------------------------------------
+    //------------------------------------------------------Получение данных-----------------------------------------
+
+    // Метод обработки запроса рейса
     @GetMapping("/trip/{tripId}")
     public ResponseEntity<?> getSeats(@PathVariable int tripId){
         try{
@@ -191,6 +206,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса поезда
     @GetMapping("/train/{trainId}")
     public ResponseEntity<?> getTrainAdmin(@PathVariable int trainId){
         try{
@@ -202,6 +218,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса рейсов
     @GetMapping("/trips")
     public ResponseEntity<?> getTrips(){
         try{
@@ -213,6 +230,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса рейсов с ценами
     @GetMapping("/trips-with-prices")
     public ResponseEntity<?> getTripsWithPrices(){
         try{
@@ -224,6 +242,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса информации о рейсе
     @GetMapping("/trip-info/{tripId}")
     public ResponseEntity<?> getTripInfo(@PathVariable int tripId){
         try{
@@ -235,6 +254,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса списка билетов
     @GetMapping("/client/tickets")
     public ResponseEntity<?> getTickets(){
         try{
@@ -246,6 +266,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса списка городов
     @GetMapping("/get-cities")
     public ResponseEntity<?> getCities(){
         try{
@@ -257,6 +278,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса списка номеров поездов
     @GetMapping("/get-train-numbers")
     public ResponseEntity<?> getTrainNumbers(){
         try{
@@ -268,7 +290,9 @@ public class MainController {
         }
     }
 
-    //------------------------------------------------------Adding data-------------------------------------------------
+    //----------------------------------------------Добавление и изменение------------------------------------------
+
+    // Метод обработки запроса добавления города
     @PostMapping("/add-city")
     public ResponseEntity<?> addCity(@RequestBody CityDTO dto){
         try{
@@ -280,6 +304,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса добавления типа вагона
     @PostMapping("/add-carriage-type")
     public ResponseEntity<?> addCarriageType(@RequestBody CarriageTypeDTO dto){
         try{
@@ -291,6 +316,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса добавления поезда
     @PostMapping("/admin/add-train")
     public ResponseEntity<?> addTrain(@RequestBody @Valid TrainInputDTO dto){
         try{
@@ -302,6 +328,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса изменения поезда
     @PatchMapping("/admin/change-train")
     public ResponseEntity<?> changeTrain(@RequestBody @Valid TrainInputDTO dto){;
         try{
@@ -313,6 +340,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса изменения рейса
     @PatchMapping("/admin/change-trip")
     public ResponseEntity<?> changeTrip(@RequestBody TripDTO dto){
         try{
@@ -324,6 +352,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса добавления рейса
     @PostMapping("/admin/add-trip")
     public ResponseEntity<?> addTrip(@RequestBody TripDTO dto){
         try{
@@ -335,6 +364,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса бронирования
     @PostMapping("/client/book")
     public ResponseEntity<?> book(@RequestBody BookingsDTO dto){
         try{
@@ -346,18 +376,21 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса проверки авторизации клиента
     @GetMapping("/client/test")
     public ResponseEntity<?> testClient(){
         return ResponseEntity.ok().build();
     }
 
+    // Метод обработки запроса проверки авторизации администратора
     @GetMapping("/admin/test")
     public ResponseEntity<?> testAdmin(){
         return ResponseEntity.ok().build();
     }
 
-    //----------------------------------------------------Deleting data-------------------------------------------------
+    //----------------------------------------------Удаление данных-------------------------------------------------
 
+    // Метод обработки запроса удаления рейса
     @DeleteMapping("/admin/trip/{tripId}")
     public ResponseEntity<?> deleteTrip(@PathVariable int tripId){
         try{
@@ -369,6 +402,7 @@ public class MainController {
         }
     }
 
+    // Метод обработки запроса удаления поезда
     @DeleteMapping("/train/{trainId}")
     public ResponseEntity<?> deleteTrain(@PathVariable int trainId){
         try{

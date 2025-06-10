@@ -205,8 +205,9 @@ public class DatabaseService {
         }
     }
 
-    public void addTrip(TripDTO dto){
+    public void addTrip(TripDTO dto) throws Exception{
         Train train = trainRepository.findById(dto.getTrainId()).orElseThrow();
+        Iterable<Trip> trips = tripRepository.findByTrain(train);
         City destination = cityRepository.findByCityName(dto.getDestination()).orElseThrow();
         String pattern = "yyyy-MM-dd HH:mm";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
@@ -214,6 +215,20 @@ public class DatabaseService {
         LocalDateTime arrivalTimeString = LocalDateTime.from(formatter.parse(dto.getArrivalTime()));
         Timestamp departureTime = Timestamp.valueOf(departureTimeString);
         Timestamp arrivalTime = Timestamp.valueOf(arrivalTimeString);
+        for(Trip trip: trips){
+            if(departureTime.getTime() >= trip.getDepartureTime().getTime() && departureTime.getTime() <= trip.getArrivalTime().getTime()){
+                throw new Exception("Поезд в это время в рейсе");
+            }
+            if(arrivalTime.getTime() >= trip.getDepartureTime().getTime() && arrivalTime.getTime() <= trip.getArrivalTime().getTime()){
+                throw new Exception("Поезд в это время в рейсе");
+            }
+            if(trip.getDepartureTime().getTime() >= departureTime.getTime() && trip.getArrivalTime().getTime() <= departureTime.getTime()){
+                throw new Exception("Поезд в это время в рейсе");
+            }
+            if(trip.getDepartureTime().getTime() >= arrivalTime.getTime() && trip.getArrivalTime().getTime() <= arrivalTime.getTime()){
+                throw new Exception("Поезд в это время в рейсе");
+            }
+        }
         tripRepository.save(new Trip(train, destination, departureTime, arrivalTime));
     }
 
@@ -361,7 +376,7 @@ public class DatabaseService {
         tripRepository.deleteById(tripId);
     }
 
-    public void updateTrip(TripDTO dto){
+    public void updateTrip(TripDTO dto) throws Exception{
         String pattern = "yyyy-MM-dd HH:mm";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         LocalDateTime departureTimeString = LocalDateTime.from(formatter.parse(dto.getDepartureTime()));
@@ -369,6 +384,22 @@ public class DatabaseService {
         Timestamp departureTime = Timestamp.valueOf(departureTimeString);
         Timestamp arrivalTime = Timestamp.valueOf(arrivalTimeString);
         Trip trip = tripRepository.findById(dto.getTripId()).orElseThrow();
+        Train tr = trainRepository.findById(dto.getTrainId()).orElseThrow();
+        Iterable<Trip> trips = tripRepository.findByTrain(tr);
+        for(Trip elem: trips){
+            if(departureTime.getTime() >= elem.getDepartureTime().getTime() && departureTime.getTime() <= elem.getArrivalTime().getTime()){
+                throw new Exception("Поезд в это время в рейсе");
+            }
+            if(arrivalTime.getTime() >= elem.getDepartureTime().getTime() && arrivalTime.getTime() <= elem.getArrivalTime().getTime()){
+                throw new Exception("Поезд в это время в рейсе");
+            }
+            if(elem.getDepartureTime().getTime() >= departureTime.getTime() && elem.getArrivalTime().getTime() <= departureTime.getTime()){
+                throw new Exception("Поезд в это время в рейсе");
+            }
+            if(elem.getDepartureTime().getTime() >= arrivalTime.getTime()  && elem.getArrivalTime().getTime() <= arrivalTime.getTime()){
+                throw new Exception("Поезд в это время в рейсе");
+            }
+        }
         if(trip.getTrain().getTrainId() != dto.getTrainId()){
             Train train = trainRepository.findById(dto.getTrainId()).orElseThrow();
             trip.setTrain(train);
