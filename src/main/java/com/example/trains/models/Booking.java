@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "booking")
 public class Booking {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
     private int bookingId;
     @ManyToOne(fetch = FetchType.LAZY)

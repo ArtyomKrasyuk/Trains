@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "carriage")
 public class Carriage {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "carriage_id")
     private int carriageId;
     @Column(name = "number_of_seats")

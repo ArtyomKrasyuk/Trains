@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "place")
 public class Place {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "place_id")
     private int placeId;
     @ManyToOne(fetch = FetchType.LAZY)

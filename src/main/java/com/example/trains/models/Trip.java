@@ -14,7 +14,7 @@ import java.util.Set;
 @Table(name = "trip")
 public class Trip {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trip_id")
     private int tripId;
     @ManyToOne(fetch = FetchType.LAZY)
