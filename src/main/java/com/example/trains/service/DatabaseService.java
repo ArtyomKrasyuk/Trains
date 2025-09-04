@@ -129,8 +129,8 @@ public class DatabaseService {
         }
     }
 
-    public void changeTrain(TrainInputDTO dto){
-        Train train = trainRepository.findById(dto.getTrainId()).orElseThrow();
+    public void changeTrain(TrainChangeDTO dto, int trainId){
+        Train train = trainRepository.findById(trainId).orElseThrow();
         for(Carriage carriage: train.getCarriages()){
             boolean exists = false;
             for(CarriageInputDTO carriageDTO: dto.getCarriages()){
@@ -205,7 +205,7 @@ public class DatabaseService {
         }
     }
 
-    public void addTrip(TripDTO dto) throws Exception{
+    public void addTrip(TripInputDTO dto) throws Exception{
         Train train = trainRepository.findById(dto.getTrainId()).orElseThrow();
         Iterable<Trip> trips = tripRepository.findByTrain(train);
         City destination = cityRepository.findByCityName(dto.getDestination()).orElseThrow();
@@ -376,17 +376,18 @@ public class DatabaseService {
         tripRepository.deleteById(tripId);
     }
 
-    public void updateTrip(TripDTO dto) throws Exception{
+    public void updateTrip(TripInputDTO dto, int tripId) throws Exception{
         String pattern = "yyyy-MM-dd HH:mm";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         LocalDateTime departureTimeString = LocalDateTime.from(formatter.parse(dto.getDepartureTime()));
         LocalDateTime arrivalTimeString = LocalDateTime.from(formatter.parse(dto.getArrivalTime()));
         Timestamp departureTime = Timestamp.valueOf(departureTimeString);
         Timestamp arrivalTime = Timestamp.valueOf(arrivalTimeString);
-        Trip trip = tripRepository.findById(dto.getTripId()).orElseThrow();
+        Trip trip = tripRepository.findById(tripId).orElseThrow();
         Train tr = trainRepository.findById(dto.getTrainId()).orElseThrow();
         Iterable<Trip> trips = tripRepository.findByTrain(tr);
         for(Trip elem: trips){
+            if(elem.getTripId() == tripId) continue;
             if(departureTime.getTime() >= elem.getDepartureTime().getTime() && departureTime.getTime() <= elem.getArrivalTime().getTime()){
                 throw new Exception("Поезд в это время в рейсе");
             }
